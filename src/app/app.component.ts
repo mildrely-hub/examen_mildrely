@@ -1,11 +1,70 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { CatalogoService } from './services/catalogo.service';
+import { Categoria } from './models/categoria.model';
+import { Producto } from './models/producto.model';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.html',
-  standalone: false,
-  styleUrl: './app.css'
+  standalone: true,
+  imports: [CommonModule, FormsModule, CurrencyPipe, HttpClientModule],
+  templateUrl: './app.html'
 })
-export class App {
-  protected readonly title = signal('frontend-examen');
+export class AppComponent implements OnInit {
+  private catalogoService = inject(CatalogoService);
+  private http = inject(HttpClient);
+
+  // Control de vista
+  isLoggedIn = false;
+  credentials = { username: '', password: '' };
+  
+  // Tus señales de datos
+  categorias = signal<Categoria[]>([]);
+  productos = signal<Producto[]>([]);
+
+  ngOnInit() {
+    // Si ya existe un token, entramos directo
+    if (localStorage.getItem('token')) {
+      this.isLoggedIn = true;
+      this.cargarCategorias();
+    }
+  }
+
+  login() {
+    // Ajusta esta URL a la de tu Backend de Spring Boot
+    this.http.post<any>('http://localhost:8080/api/auth/login', this.credentials)
+      .subscribe({
+        next: (res) => {
+          localStorage.setItem('token', res.token);
+          this.isLoggedIn = true;
+          this.cargarCategorias();
+        },
+        error: () => alert('Error: Usuario o clave incorrectos')
+      });
+  }
+
+  cargarCategorias() {
+    this.catalogoService.getCategorias().subscribe({
+      next: (data) => this.categorias.set(data),
+      error: (err) => console.error("Error al cargar categorías:", err)
+    });
+  }
+
+  onCategoryChange(event: Event) {
+    const id = (event.target as HTMLSelectElement).value;
+    if (id) {
+      this.catalogoService.getProductosPorCategoria(Number(id)).subscribe({
+        next: (data) => this.productos.set(data)
+      });
+    } else {
+      this.productos.set([]);
+    }
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.isLoggedIn = false;
+  }
 }

@@ -1,45 +1,47 @@
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Catálogo de Productos - EPIIS UNAMBA</h3>
+<div class="container py-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h3 class="text-center mb-0">Catálogo de Productos - EPIIS</h3>
         </div>
         <div class="card-body">
-
             <div class="mb-4">
-                <label class="form-label fw-bold">Seleccione una Categoría:</label>
+                <label class="form-label fw-bold">Filtrar por Categoría:</label>
                 <select class="form-select form-select-lg" (change)="onCategoriaChange($event)">
-                    <option value="">-- Seleccione --</option>
+                    <option value="">-- Seleccione una categoría --</option>
                     @for (cat of categorias(); track cat.id) {
                     <option [value]="cat.id">{{ cat.name }}</option>
                     }
                 </select>
             </div>
 
-            <table class="table table-hover table-striped border">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Producto</th>
-                        <th>Precio</th>
-                        <th>Categoría</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (prod of productos(); track prod.id) {
-                    <tr>
-                        <td>{{ prod.id }}</td>
-                        <td>{{ prod.name }}</td>
-                        <td>{{ prod.price | currency:'PEN ':'symbol':'1.2-2' }}</td>
-                        <td><span class="badge bg-info text-dark">{{ prod.categoria.name }}</span></td>
-                    </tr>
-                    } @empty {
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">No hay productos para mostrar.</td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-
+            <div class="table-responsive">
+                <table class="table table-hover mt-3 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre del Producto</th>
+                            <th class="text-end">Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (prod of productos(); track prod.id) {
+                        <tr>
+                            <td>{{ prod.id }}</td>
+                            <td>{{ prod.name }}</td>
+                            <td class="text-end text-success fw-bold">
+                                {{ prod.price | currency:'PEN':'S/ ' }}
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-muted">
+                                No hay productos para mostrar. Seleccione una categoría.
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

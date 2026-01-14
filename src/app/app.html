@@ -1,40 +1,69 @@
 <div class="container mt-5">
-  <div class="card">
-    <div class="card-header bg-primary text-white">
-      <h3>Catálogo Dinámico - Mildrely</h3>
-    </div>
-    <div class="card-body">
 
-      <div class="mb-4">
-        <label class="form-label fw-bold">Categoría:</label>
-        <select class="form-select" (change)="onCategoryChange($event)">
-          <option value="">-- Seleccione una categoría --</option>
-          <option *ngFor="let cat of categorias" [value]="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
+  <div *ngIf="!isLoggedIn" class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-dark text-white text-center py-3">
+          <h4 class="mb-0">INICIO DE SESIÓN</h4>
+        </div>
+        <div class="card-body p-4">
+          <form (ngSubmit)="login()">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Usuario:</label>
+              <input type="text" name="u" [(ngModel)]="credentials.username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Contraseña:</label>
+              <input type="password" name="p" [(ngModel)]="credentials.password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-bold py-2">ENTRAR</button>
+          </form>
+        </div>
       </div>
-
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Precio</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let prod of productos">
-            <td>{{ prod.id }}</td>
-            <td>{{ prod.name }}</td>
-            <td>{{ prod.price | currency:'PEN':'S/ ' }}</td>
-          </tr>
-          <tr *ngIf="productos.length === 0">
-            <td colspan="3" class="text-center text-muted">No hay productos seleccionados.</td>
-          </tr>
-        </tbody>
-      </table>
-
     </div>
   </div>
+
+  <div *ngIf="isLoggedIn">
+    <div class="card shadow border-primary">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">Catálogo de Productos</h3>
+        <button class="btn btn-light btn-sm fw-bold" (click)="logout()">Cerrar Sesión</button>
+      </div>
+      <div class="card-body">
+        <div class="mb-4">
+          <label class="form-label fw-bold text-primary">Seleccione Categoría:</label>
+          <select class="form-select form-select-lg border-primary" (change)="onCategoryChange($event)">
+            <option value="">-- Ver todas las categorías --</option>
+            @for (cat of categorias(); track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+
+        <table class="table table-hover table-bordered border-primary">
+          <thead class="table-primary">
+            <tr>
+              <th>ID</th>
+              <th>Nombre del Producto</th>
+              <th>Precio Unitario</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (prod of productos(); track prod.id) {
+            <tr>
+              <td>{{ prod.id }}</td>
+              <td>{{ prod.name }}</td>
+              <td class="fw-bold text-success">{{ prod.price | currency:'PEN':'S/ ' }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="3" class="text-center text-muted">No hay productos en esta categoría.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div>
