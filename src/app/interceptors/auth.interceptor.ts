@@ -16,10 +16,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(clonedRequest).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Si el servidor responde 401 (Unauthorized), el token expiró o es inválido
-      if (error.status === 401) {
-        localStorage.removeItem('token'); // Limpiamos el token
-        router.navigate(['/login']);    // Redirigimos al Login
+      if (error.status === 401 || error.status === 403) {
+        localStorage.removeItem('token');
+        router.navigate(['/login']);
       }
       return throwError(() => error);
     })

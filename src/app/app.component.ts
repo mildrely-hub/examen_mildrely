@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { CatalogoService } from './services/catalogo.service';
 import { Categoria } from './models/categoria.model';
 import { Producto } from './models/producto.model';
@@ -9,23 +9,21 @@ import { Producto } from './models/producto.model';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe, HttpClientModule],
+  imports: [CommonModule, FormsModule, CurrencyPipe],
   templateUrl: './app.html'
 })
 export class AppComponent implements OnInit {
   private catalogoService = inject(CatalogoService);
   private http = inject(HttpClient);
 
-  // Control de vista
   isLoggedIn = false;
   credentials = { username: '', password: '' };
   
-  // Tus señales de datos
   categorias = signal<Categoria[]>([]);
   productos = signal<Producto[]>([]);
 
   ngOnInit() {
-    // Si ya existe un token, entramos directo
+    // Si ya inició sesión antes, entrar directo
     if (localStorage.getItem('token')) {
       this.isLoggedIn = true;
       this.cargarCategorias();
@@ -33,7 +31,6 @@ export class AppComponent implements OnInit {
   }
 
   login() {
-    // Ajusta esta URL a la de tu Backend de Spring Boot
     this.http.post<any>('http://localhost:8080/api/auth/login', this.credentials)
       .subscribe({
         next: (res) => {
@@ -41,14 +38,14 @@ export class AppComponent implements OnInit {
           this.isLoggedIn = true;
           this.cargarCategorias();
         },
-        error: () => alert('Error: Usuario o clave incorrectos')
+        error: () => alert('Credenciales inválidas (admin/admin)')
       });
   }
 
   cargarCategorias() {
     this.catalogoService.getCategorias().subscribe({
       next: (data) => this.categorias.set(data),
-      error: (err) => console.error("Error al cargar categorías:", err)
+      error: (err) => console.error("Error backend:", err)
     });
   }
 
@@ -66,5 +63,6 @@ export class AppComponent implements OnInit {
   logout() {
     localStorage.removeItem('token');
     this.isLoggedIn = false;
+    this.productos.set([]);
   }
 }
