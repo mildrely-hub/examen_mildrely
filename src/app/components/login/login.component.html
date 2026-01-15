@@ -1,27 +1,40 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="card shadow-lg" style="width: 100%; max-width: 400px;">
         <div class="card-header bg-primary text-white text-center py-3">
-            <h4 class="mb-0">Sistema EPIIS - Login</h4>
+            <h4 class="mb-0">REGISTRATE</h4>
         </div>
         <div class="card-body p-4">
             <form (ngSubmit)="onLogin()">
                 <div class="mb-3">
                     <label class="form-label fw-bold">Usuario</label>
                     <input type="text" name="username" [(ngModel)]="credentials.username" class="form-control"
-                        placeholder="Ingrese su usuario" required>
+                        placeholder="Ingrese su usuario" required [disabled]="isLoading">
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Contraseña</label>
                     <input type="password" name="password" [(ngModel)]="credentials.password" class="form-control"
-                        placeholder="********" required>
+                        placeholder="********" required [disabled]="isLoading">
                 </div>
-                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm mt-2">
+
+                @if (errorMessage) {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ errorMessage }}
+                    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+                </div>
+                }
+
+                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm mt-2" [disabled]="isLoading">
+                    @if (isLoading) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Cargando...
+                    } @else {
                     INGRESAR
+                    }
                 </button>
             </form>
         </div>
         <div class="card-footer text-center bg-light py-2">
-            <small class="text-muted">Examen Desarrollo de Software II</small>
+            <small class="text-muted">Pon bien tus datos</small>
         </div>
     </div>
 </div>

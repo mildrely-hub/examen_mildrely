@@ -7,8 +7,6 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([authInterceptor]) // ACTIVACIÓN DEL TOKEN
-    )
+    provideHttpClient(withInterceptors([authInterceptor]))
   ]
 };

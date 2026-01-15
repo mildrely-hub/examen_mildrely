@@ -15,16 +15,21 @@ export class LoginComponent {
   private router = inject(Router);
 
   credentials = { username: '', password: '' };
+  isLoading = false;
+  errorMessage = '';
 
   onLogin() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    
     this.authService.login(this.credentials).subscribe({
-      next: (res) => {
-        // Guardamos el token para los puntos de seguridad
-        localStorage.setItem('token', res.token);
-        // Redirigimos al catálogo que ya tenías funcionando
+      next: () => {
         this.router.navigate(['/catalogo']);
       },
-      error: () => alert('Usuario o clave incorrectos')
+      error: (error) => {
+        this.errorMessage = 'Usuario o contraseña incorrectos';
+        this.isLoading = false;
+      }
     });
   }
 }
